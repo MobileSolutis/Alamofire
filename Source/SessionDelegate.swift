@@ -474,8 +474,8 @@ extension SessionDelegate: URLSessionTaskDelegate {
 
         /// If an error occurred and the retrier is set, asynchronously ask the retrier if the request
         /// should be retried. Otherwise, complete the task by notifying the task delegate.
-        if let retrier = retrier, let error = error {
-            retrier.should(sessionManager, retry: request, with: error) { [weak self] shouldRetry, timeDelay in
+        if let retrier = retrier {
+            retrier.should(sessionManager, retry: request, with: error ?? NSError(domain: "Error", code: request.response?.statusCode ?? 500, userInfo: nil)) { [weak self] shouldRetry, timeDelay in
                 guard shouldRetry else { completeTask(session, task, error) ; return }
 
                 DispatchQueue.utility.after(timeDelay) { [weak self] in
